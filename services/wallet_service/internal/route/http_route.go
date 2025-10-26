@@ -15,9 +15,9 @@ func SetupWalletRoute(
 	app *fiber.App,
 	walletController controller.WalletController,
 ) {
-	dashboard := app.Group("/v1")
+	wallet := app.Group("/v1")
 
-	dashboard.Get("/wallet/:id", walletController.GetWalletInfo)
+	wallet.Get("/wallet/:id", walletController.GetWalletInfo)
 }
 
 func SetupWalletController(

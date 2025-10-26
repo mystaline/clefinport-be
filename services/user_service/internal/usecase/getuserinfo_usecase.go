@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"log"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/mystaline/clefinport-be/services/user_service/internal/dto"
@@ -47,12 +49,14 @@ func (u *GetUserInfoUseCase) InitService() {
 func (u *GetUserInfoUseCase) Invoke(
 	param GetUserInfoParam,
 ) (*dto.GetUserInfoResult, error) {
+	startRequest := time.Now()
 	res, err := u.WalletClient.GetTotalBalanceByUserId(param.Ctx, &pb_wallet.GetTotalBalanceByUserIdRequest{
 		UserId: param.UserID,
 	})
 	if err != nil {
 		return nil, err
 	}
+	log.Println("GRPC request done in", time.Since(startRequest))
 
 	if res.UserId != param.UserID {
 		return nil, &entity.HttpError{

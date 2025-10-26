@@ -2,6 +2,7 @@ package app
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -46,7 +47,9 @@ func (a *App) Run(
 	target := fmt.Sprintf("%s:%s", grpcHost, grpcAddr)
 	conn := mustConnectGRPC(target, 10)
 
+	startDial := time.Now()
 	walletClient := pb_wallet.NewWalletServiceClient(conn)
+	log.Println("Dial done in", time.Since(startDial))
 
 	setupRoute(a.app, serviceProvider, walletClient)
 

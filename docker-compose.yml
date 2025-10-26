@@ -1,0 +1,88 @@
+services:
+  clefinport-user-service:
+    build:
+      context: .
+      dockerfile: ./services/user_service/Dockerfile
+    env_file:
+      - .env
+      - ./services/user_service/.env
+    ports:
+      - "${USER_SERVICE_PORT:-8080}:8080"
+    volumes:
+      - ./services/user_service:/app
+    networks:
+      - clefinport-net
+    depends_on:
+      - pgsql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      retries: 3
+  clefinport-wallet-service:
+    build:
+      context: .
+      dockerfile: ./services/wallet_service/Dockerfile
+    env_file:
+      - .env
+      - ./services/wallet_service/.env
+    ports:
+      - "${WALLET_SERVICE_PORT:-8081}:8081"
+    volumes:
+      - ./services/wallet_service:/app
+    networks:
+      - clefinport-net
+    depends_on:
+      - pgsql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 10s
+      retries: 3
+  clefinport-log-service:
+    build:
+      context: .
+      dockerfile: ./services/log_service/Dockerfile
+    env_file:
+      - .env
+      - ./services/log_service/.env
+    ports:
+      - "${LOG_SERVICE_PORT:-8082}:8082"
+    volumes:
+      - ./services/log_service:/app
+    networks:
+      - clefinport-net
+    depends_on:
+      - pgsql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 10s
+      retries: 3
+  pgsql:
+    image: "postgres:17"
+    ports:
+      - "${FORWARD_DB_PORT:-5432}:5432"
+    environment:
+      PGPASSWORD: "${DB_PASSWORD:-secret}"
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-secret}"
+    volumes:
+      - "sail-pgsql:/var/lib/postgresql/data"
+    networks:
+      - clefinport-net
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - "-q"
+        - "-d"
+        - "postgres"
+        - "-U"
+        - "${DB_USERNAME}"
+      retries: 3
+      timeout: 5s
+networks:
+  clefinport-net:
+    driver: bridge
+volumes:
+  sail-pgsql:
+    external: true

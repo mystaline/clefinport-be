@@ -1,0 +1,8 @@
+go 1.24.6
+
+use (
+	./pkg
+	./services/log_service
+	./services/user_service
+	./services/wallet_service
+)

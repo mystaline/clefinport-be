@@ -17,9 +17,16 @@ func SetupUserRoute(
 	app *fiber.App,
 	userController controller.UserController,
 ) {
-	dashboard := app.Group("/v1")
+	user := app.Group("/v1/user")
 
-	dashboard.Get("/user/:id", userController.GetUserInfo)
+	// // Get user's wallet list
+	// user.Get("/:id/wallets", userController.GetUserWalletList)
+	// Get user info
+	user.Get("/:id", userController.GetUserInfo)
+	// // Change password
+	// user.Put("/:id/password", userController.ChangePassword)
+	// // Update profile
+	// user.Put("/:id", userController.UpdateUserProfile)
 }
 
 func SetupUserController(

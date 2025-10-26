@@ -1,7 +1,8 @@
-package http
+package delivery
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/mystaline/clefinport-be/pkg/entity"
@@ -38,7 +39,7 @@ type UseCaseFunc[T any] func(ctx context.Context) (T, *entity.HttpError)
 //	       return res, nil
 //	   }, "Successfully fetched data")
 //	}
-func RunWithTimeout[T any](
+func RunHTTPWithTimeout[T any](
 	ctx *fiber.Ctx,
 	timeout time.Duration,
 	useCase UseCaseFunc[T],
@@ -73,5 +74,41 @@ func RunWithTimeout[T any](
 		return response.SendResponse(ctx, err.Code, err.Data, err.Message)
 	case res := <-resultChan:
 		return response.SendResponse(ctx, successCode, res, successMessage)
+	}
+}
+
+func RunGRPCWithTimeout[T any](
+	ctx context.Context,
+	timeout time.Duration,
+	useCase UseCaseFunc[T],
+) (any, error) {
+	ctxWithTimeout, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	resultChan := make(chan T)
+	errorChan := make(chan error)
+
+	go func() {
+		res, err := useCase(ctxWithTimeout)
+		if err != nil {
+			select {
+			case errorChan <- err:
+			case <-ctxWithTimeout.Done():
+			}
+			return
+		}
+		select {
+		case <-ctxWithTimeout.Done():
+		case resultChan <- res:
+		}
+	}()
+
+	select {
+	case <-ctxWithTimeout.Done():
+		return nil, errors.New("Timeout")
+	case err := <-errorChan:
+		return nil, err
+	case res := <-resultChan:
+		return res, nil
 	}
 }

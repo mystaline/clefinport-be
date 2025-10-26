@@ -9,6 +9,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/mystaline/clefinport-be/pkg/provider"
+
+	pb_wallet "github.com/mystaline/clefinport-be/pkg/pb/wallet"
 )
 
 func SetupUserRoute(
@@ -23,8 +25,9 @@ func SetupUserRoute(
 func SetupUserController(
 	app *fiber.App,
 	serviceProvider provider.IServiceProvider,
+	walletClient pb_wallet.WalletServiceClient,
 ) {
-	getUserInfoUsecase := usecase.MakeGetUserInfoUseCase(serviceProvider)
+	getUserInfoUsecase := usecase.MakeGetUserInfoUseCase(serviceProvider, walletClient)
 
 	userController := controller.MakeUserController(
 		60*time.Second,

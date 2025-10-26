@@ -10,8 +10,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 
+	"github.com/mystaline/clefinport-be/pkg/delivery"
 	"github.com/mystaline/clefinport-be/pkg/entity"
-	"github.com/mystaline/clefinport-be/pkg/http"
 )
 
 type UserController struct {
@@ -41,7 +41,7 @@ func MakeUserController(
 func (c *UserController) GetUserInfo(ctx *fiber.Ctx) error {
 	userId := ctx.Params("id")
 
-	return http.RunWithTimeout(
+	return delivery.RunHTTPWithTimeout(
 		ctx,
 		c.Timeout,
 		func(ctxWithTimeout context.Context) (*dto.GetUserInfoResult, *entity.HttpError) {

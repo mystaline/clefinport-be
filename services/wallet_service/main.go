@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"sync"
 
 	"github.com/mystaline/clefinport-be/pkg/provider"
 
@@ -20,6 +21,24 @@ func main() {
 
 	serviceProvider := provider.ServiceProvider{}
 
-	app := app.MakeApp()
-	app.Run(&serviceProvider)
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	// Start HTTP server
+	go func() {
+		defer wg.Done()
+
+		app := app.MakeApp()
+		app.Run(&serviceProvider)
+	}()
+
+	// Start gRPC server
+	go func() {
+		defer wg.Done()
+		if err := app.RunGRPCServer(&serviceProvider); err != nil {
+			log.Fatalf("failed to run grpc server: %v", err)
+		}
+	}()
+
+	wg.Wait()
 }

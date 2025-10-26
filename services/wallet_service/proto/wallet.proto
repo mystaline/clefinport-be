@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package wallet;
+option go_package = "pkg/pb/wallet;wallet";
+
+service WalletService {
+  rpc GetTotalBalanceByUserId (GetTotalBalanceByUserIdRequest) returns (GetTotalBalanceByUserIdResponse);
+}
+
+message GetTotalBalanceByUserIdRequest {
+  string user_id = 1;
+}
+
+message GetTotalBalanceByUserIdResponse {
+  string user_id = 1;
+  double total_balance = 2;
+}

@@ -8,14 +8,14 @@ type EmbeddedCurrency struct {
 }
 
 type GetUserInfoResult struct {
-	ID             string  `json:"id"`
-	FullName       string  `json:"fullName"`
-	ProfilePicture *string `json:"profilePicture"`
-	TotalBalance   int     `json:"totalBalance"`
-	Timezone       string  `json:"timezone"`
-	Currency       EmbeddedCurrency
-	CreatedAt      time.Time `json:"createdAt"`
-	UpdatedAt      time.Time `json:"updatedAt"`
+	ID             string           `json:"id"`
+	FullName       string           `json:"fullName"`
+	ProfilePicture *string          `json:"profilePicture"`
+	TotalBalance   int              `json:"totalBalance"`
+	Timezone       string           `json:"timezone"`
+	Currency       EmbeddedCurrency `json:"currency"`
+	CreatedAt      time.Time        `json:"createdAt"`
+	UpdatedAt      time.Time        `json:"updatedAt"`
 }
 
 type GetUserInfoData struct {

@@ -64,10 +64,10 @@ func (u *GetUserInfoUseCase) Invoke(
 
 	query, args, _ := sql_query.
 		NewSQLSelectBuilder[dto.GetUserInfoData](db.UserTableName).
+		LeftJoin(db.ProfileSettingTableName, "profile_settings.user_id = users.id").
 		Where(map[string]sql_query.SQLCondition{
-			"id": {Operator: sql_query.SQLOperatorEqual, Value: param.UserID},
+			"users.id": {Operator: sql_query.SQLOperatorEqual, Value: param.UserID},
 		}).
-		SetLimit(1).
 		Build()
 
 	var user dto.GetUserInfoResult

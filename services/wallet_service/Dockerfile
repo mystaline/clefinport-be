@@ -19,5 +19,5 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 FROM scratch
 WORKDIR /bin
 COPY --from=builder /bin/wallet-service /bin/
-EXPOSE 8081
+EXPOSE 8081 50051
 ENTRYPOINT ["/bin/wallet-service"]
